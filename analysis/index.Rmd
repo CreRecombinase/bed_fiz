@@ -9,3 +9,9 @@ editor_options:
 ---
 
 Welcome to my research website.
+
+```{r}
+wflow_files <- fs::dir_ls("analysis",glob="*Rmd")
+#map(wflow)
+```
+
