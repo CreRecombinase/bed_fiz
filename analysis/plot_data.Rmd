@@ -9,6 +9,9 @@ editor_options:
 
 ## Introduction
 
+https://www.bioconductor.org/help/course-materials/2016/CSAMA/lab-5-chipseq/Epigenetics.html
+
+https://bioconductor.org/packages/release/bioc/vignettes/Gviz/inst/doc/Gviz.html
 ```{r}
 library(biomaRt)
 library(plyranges)
@@ -17,6 +20,13 @@ library(Gviz)
 
 all_experiment_df <- readr::read_csv("data/file_list.csv")
 
+pos_start <- 38065690
+pos_end <-  38077293
+chr <- 17
+# pos_start <- 38065690
+# pos_end <- 38077293
+region_df <- tibble::tibble(seqnames=paste0("chr",chr),start=pos_start,width=(pos_end-pos_start+1)) %>%
+    as_granges()
 mart = useMart(biomart = "ENSEMBL_MART_ENSEMBL",
                dataset = "hsapiens_gene_ensembl")
 fm <-  Gviz:::.getBMFeatureMap()
@@ -24,28 +34,87 @@ fm <-  Gviz:::.getBMFeatureMap()
 fm["symbol"] = "ensembl_gene_id"
 input_track_list <- list()
 input_track_list[["gene"]] <-  BiomartGeneRegionTrack(chromosome='chr17', genome="hg19", 
-                                                      start=38065690, end = 38077293, 
+                                                      start=pos_start, end = pos_end, 
                                                       biomart=mart,
                                                       size=4, name="RefSeq", utr5="red3", utr3="red3", 
                                                       protein_coding="black", col.line=NULL, cex=7,
                                                       collapseTranscripts="longest",
                                                       featureMap=fm)
-input_track_list[["axis"]] <- GenomeAxisTrack( )
+input_track_list[["axis"]] <- GenomeAxisTrack(range =  region_df)
 
-for(i in 1:nrow(all_experiment_df)){
+i <- 1
   marker_name <- all_experiment_df$marker_name[i]
   input_track_data <- import(all_experiment_df$trimpath[i],format="bigWig")
   input_track_list[[marker_name]] = DataTrack(input_track_data, 
                                     strand="*",
                                     genome="hg19",
                                     col.histogram='gray',
+                                    type='histogram',
                                     fill.histogram='black',
                                     name=marker_name,
                                     col.axis="black")
-}
+  
+  i <- 2
+  
+  marker_name <- all_experiment_df$marker_name[i]
+  input_track_data <- import(all_experiment_df$trimpath[i],format="bigWig")
+  input_track_list[[marker_name]] = DataTrack(input_track_data, 
+                                    strand="*",
+                                    genome="hg19",
+                                    col.histogram='gray',
+                                    type='histogram',
+                                    fill.histogram='black',
+                                    name=marker_name,
+                                    col.axis="black")
+  
+  i <- 3
+  
+  
+    marker_name <- all_experiment_df$marker_name[i]
+  input_track_data <- import(all_experiment_df$trimpath[i],format="bigWig")
+  input_track_list[[marker_name]] = DataTrack(input_track_data, 
+                                    strand="*",
+                                    genome="hg19",
+                                    col.histogram='gray',
+                                    type='histogram',
+                                    fill.histogram='black',
+                                    name=marker_name,
+                                    col.axis="black")
+  
+  
+  i <- 4
+    marker_name <- all_experiment_df$marker_name[i]
+  input_track_data <- import(all_experiment_df$trimpath[i],format="bigWig")
+  input_track_list[[marker_name]] = DataTrack(input_track_data, 
+                                    strand="*",
+                                    genome="hg19",
+                                    col.histogram='gray',
+                                    type='histogram',
+                                    fill.histogram='black',
+                                    name=marker_name,
+                                    col.axis="black")
+  
+  i <- 5
+  
+  marker_name <- all_experiment_df$marker_name[i]
+  input_track_data <- import(all_experiment_df$trimpath[i],format="bigWig")
+  input_track_list[[marker_name]] = DataTrack(input_track_data, 
+                                    strand="*",
+                                    genome="hg19",
+                                    col.histogram='gray',
+                                    type='histogram',
+                                    fill.histogram='black',
+                                    name=marker_name,
+                                    col.axis="black")
+  
+
+  
+  
+  
+
 
 plotTracks(input_track_list,
            transcriptAnnotation="symbol", window="auto", 
-           cex.title=1, fontsize=10 )
+           cex.title=1, fontsize=10,from=pos_start,to=pos_end)
 ```
 
