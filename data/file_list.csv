@@ -1,0 +1,6 @@
+marker,url,path,trimpath,marker_name
+H3K9ac ChIP-seq on human A549 treated with 0.02% ethanol,https://www.encodeproject.org/files/ENCFF493DXJ/@@download/ENCFF493DXJ.bigWig,data/bigwig_files/ENCFF493DXJ.bigWig,data/trim_bigwig_files/ENCFF493DXJ.bigWig,H3K9ac
+H3K4me3 ChIP-seq on human A549 treated with 0.02% ethanol,https://www.encodeproject.org/files/ENCFF709KWY/@@download/ENCFF709KWY.bigWig,data/bigwig_files/ENCFF709KWY.bigWig,data/trim_bigwig_files/ENCFF709KWY.bigWig,H3K4me3
+H3K27ac ChIP-seq on human A549 treated with 0.02% ethanol,https://www.encodeproject.org/files/ENCFF103BLQ/@@download/ENCFF103BLQ.bigWig,data/bigwig_files/ENCFF103BLQ.bigWig,data/trim_bigwig_files/ENCFF103BLQ.bigWig,H3K27ac
+H3K27me3 ChIP-seq on human A549 treated with 0.02% ethanol,https://www.encodeproject.org/files/ENCFF336AWS/@@download/ENCFF336AWS.bigWig,data/bigwig_files/ENCFF336AWS.bigWig,data/trim_bigwig_files/ENCFF336AWS.bigWig,H3K27me3
+H3K4me1 ChIP-seq on human A549 treated with 0.02% ethanol,https://www.encodeproject.org/files/ENCFF613NHX/@@download/ENCFF613NHX.bigWig,data/bigwig_files/ENCFF613NHX.bigWig,data/trim_bigwig_files/ENCFF613NHX.bigWig,H3K4me1
