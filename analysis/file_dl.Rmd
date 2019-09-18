@@ -1,0 +1,56 @@
+---
+title: "file_dl"
+author: "CreRecombinase"
+date: "2019-09-18"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r,eval=FALSE}
+library(tidyverse)
+library(httr)
+
+
+all_exp <- c("/experiments/ENCSR000ASV",
+"/experiments/ENCSR000ASH",
+"/experiments/ENCSR000AUI",
+"/experiments/ENCSR000AUK",
+"/experiments/ENCSR000AUM")
+
+encode_url <- "https://www.encodeproject.org"
+metadata_urls <- paste0(encode_url,all_exp)
+
+bed_function <- function(url){
+
+  metadata_json <- content(GET(url))
+  (data_description <- metadata_json$description)
+  metadata_file_name <- map_chr(keep(metadata_json$files,function(x){
+    if(x$file_format!="bigWig")
+      return(FALSE)
+    if(x$output_type!="fold change over control")
+      return(FALSE)
+    if(x$assembly!="hg19")
+      return(FALSE)
+    if(!isTRUE(all.equal(x$biological_replicates,list(1,2)))){
+      return(FALSE)
+    }
+    return(TRUE)
+
+  }),"href")
+
+  return(tibble::tibble(marker=data_description,url=paste0(encode_url,metadata_file_name)))
+}
+
+all_experiment_df <- map_df(metadata_urls,bed_function) %>% mutate(
+  path=fs::path("data","bigwig_files",map_chr(url,~fs::path_file(parse_url(.x)$path))),
+  trimpath=fs::path("data","trim_bigwig_files",fs::path_file(path)),
+  marker_name=map_chr(str_split(marker,pattern=" "),1))
+
+write_csv(all_experiment_df,"data/file_list.csv")
+```
+
+
+

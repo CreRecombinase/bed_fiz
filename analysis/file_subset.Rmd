@@ -1,0 +1,35 @@
+---
+title: "file_subset"
+author: "CreRecombinase"
+date: "2019-09-18"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r,eval=FALSE}
+library(tidyverse)
+library(plyranges)
+library(rtracklayer)
+
+
+all_experiment_df <- read_csv("data/file_list.csv")
+all_experiment_df <- 
+write_csv()
+
+
+
+
+for(i in 1:nrow(all_experiment_df)){
+
+  cat(i)
+  download.file(url = all_experiment_df$url[i],destfile = all_experiment_df$path)
+  tr <- import(as.character(all_experiment_df$path[i]),format="bigWig",which=region_df)
+  write_bigwig(tr,file=as.character(all_experiment_df$trimpath[i]))
+  cat("done!\n")
+}
+
+```
+

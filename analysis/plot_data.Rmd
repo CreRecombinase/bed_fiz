@@ -1,0 +1,51 @@
+---
+title: "plot_data"
+author: "CreRecombinase"
+date: "2019-09-18"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r}
+library(biomaRt)
+library(plyranges)
+library(rtracklayer)
+library(Gviz)
+
+all_experiment_df <- readr::read_csv("data/file_list.csv")
+
+mart = useMart(biomart = "ENSEMBL_MART_ENSEMBL",
+               dataset = "hsapiens_gene_ensembl")
+fm <-  Gviz:::.getBMFeatureMap()
+
+fm["symbol"] = "ensembl_gene_id"
+input_track_list <- list()
+input_track_list[["gene"]] <-  BiomartGeneRegionTrack(chromosome='chr17', genome="hg19", 
+                                                      start=38065690, end = 38077293, 
+                                                      biomart=mart,
+                                                      size=4, name="RefSeq", utr5="red3", utr3="red3", 
+                                                      protein_coding="black", col.line=NULL, cex=7,
+                                                      collapseTranscripts="longest",
+                                                      featureMap=fm)
+input_track_list[["axis"]] <- GenomeAxisTrack( )
+
+for(i in 1:nrow(all_experiment_df)){
+  marker_name <- all_experiment_df$marker_name[i]
+  input_track_data <- import(all_experiment_df$trimpath[i],format="bigWig")
+  input_track_list[[marker_name]] = DataTrack(input_track_data, 
+                                    strand="*",
+                                    genome="hg19",
+                                    col.histogram='gray',
+                                    fill.histogram='black',
+                                    name=marker_name,
+                                    col.axis="black")
+}
+
+plotTracks(input_track_list,
+           transcriptAnnotation="symbol", window="auto", 
+           cex.title=1, fontsize=10 )
+```
+
