@@ -528,17 +528,23 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomCreRecombinasebedfiztree910e85ff13bc53052803be33dc78fa6abb0a2dc5targetblank910e85fa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/CreRecombinase/bed_fiz/tree/910e85ff13bc53052803be33dc78fa6abb0a2dc5" target="_blank">910e85f</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomCreRecombinasebedfiztreef8800990d5bc25b9952874b7296401268e27cfcbtargetblankf880099a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/CreRecombinase/bed_fiz/tree/f8800990d5bc25b9952874b7296401268e27cfcb" target="_blank">f880099</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomCreRecombinasebedfiztree910e85ff13bc53052803be33dc78fa6abb0a2dc5targetblank910e85fa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomCreRecombinasebedfiztreef8800990d5bc25b9952874b7296401268e27cfcbtargetblankf880099a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 </p>
 <pre><code>
 Ignored files:
+    Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    data/bigwig_files/
+
+Unstaged changes:
+    Modified:   analysis/file_dl.Rmd
+    Modified:   analysis/file_subset.Rmd
 
 </code></pre>
 <p>
@@ -577,6 +583,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/CreRecombinase/bed_fiz/blob/f8800990d5bc25b9952874b7296401268e27cfcb/analysis/plot_data.Rmd" target="_blank">f880099</a>
+</td>
+<td>
+CreRecombinase
+</td>
+<td>
+2019-09-18
+</td>
+<td>
+wflow_publish(“analysis/plot_data.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/CreRecombinase/bed_fiz/277d1c552aabbe91784682aec463327d4e9ed49f/docs/plot_data.html" target="_blank">277d1c5</a>
+</td>
+<td>
+CreRecombinase
+</td>
+<td>
+2019-09-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -637,6 +677,8 @@ Build site.
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
+<p><a href="https://www.bioconductor.org/help/course-materials/2016/CSAMA/lab-5-chipseq/Epigenetics.html" class="uri">https://www.bioconductor.org/help/course-materials/2016/CSAMA/lab-5-chipseq/Epigenetics.html</a></p>
+<p><a href="https://bioconductor.org/packages/release/bioc/vignettes/Gviz/inst/doc/Gviz.html" class="uri">https://bioconductor.org/packages/release/bioc/vignettes/Gviz/inst/doc/Gviz.html</a></p>
 <pre class="r"><code>library(biomaRt)
 library(plyranges)</code></pre>
 <pre><code>Loading required package: BiocGenerics</code></pre>
@@ -690,36 +732,102 @@ cols(
   trimpath = col_character(),
   marker_name = col_character()
 )</code></pre>
-<pre class="r"><code>mart = useMart(biomart = &quot;ENSEMBL_MART_ENSEMBL&quot;,
+<pre class="r"><code>pos_start &lt;- 38065690
+pos_end &lt;-  38077293
+chr &lt;- 17
+# pos_start &lt;- 38065690
+# pos_end &lt;- 38077293
+region_df &lt;- tibble::tibble(seqnames=paste0(&quot;chr&quot;,chr),start=pos_start,width=(pos_end-pos_start+1)) %&gt;%
+    as_granges()
+mart = useMart(biomart = &quot;ENSEMBL_MART_ENSEMBL&quot;,
                dataset = &quot;hsapiens_gene_ensembl&quot;)
 fm &lt;-  Gviz:::.getBMFeatureMap()
 
 fm[&quot;symbol&quot;] = &quot;ensembl_gene_id&quot;
 input_track_list &lt;- list()
 input_track_list[[&quot;gene&quot;]] &lt;-  BiomartGeneRegionTrack(chromosome=&#39;chr17&#39;, genome=&quot;hg19&quot;, 
-                                                      start=38065690, end = 38077293, 
+                                                      start=pos_start, end = pos_end, 
                                                       biomart=mart,
                                                       size=4, name=&quot;RefSeq&quot;, utr5=&quot;red3&quot;, utr3=&quot;red3&quot;, 
                                                       protein_coding=&quot;black&quot;, col.line=NULL, cex=7,
                                                       collapseTranscripts=&quot;longest&quot;,
                                                       featureMap=fm)
-input_track_list[[&quot;axis&quot;]] &lt;- GenomeAxisTrack( )
+input_track_list[[&quot;axis&quot;]] &lt;- GenomeAxisTrack(range =  region_df)
 
-for(i in 1:nrow(all_experiment_df)){
+i &lt;- 1
   marker_name &lt;- all_experiment_df$marker_name[i]
   input_track_data &lt;- import(all_experiment_df$trimpath[i],format=&quot;bigWig&quot;)
   input_track_list[[marker_name]] = DataTrack(input_track_data, 
                                     strand=&quot;*&quot;,
                                     genome=&quot;hg19&quot;,
                                     col.histogram=&#39;gray&#39;,
+                                    type=&#39;histogram&#39;,
                                     fill.histogram=&#39;black&#39;,
                                     name=marker_name,
                                     col.axis=&quot;black&quot;)
-}
+  
+  i &lt;- 2
+  
+  marker_name &lt;- all_experiment_df$marker_name[i]
+  input_track_data &lt;- import(all_experiment_df$trimpath[i],format=&quot;bigWig&quot;)
+  input_track_list[[marker_name]] = DataTrack(input_track_data, 
+                                    strand=&quot;*&quot;,
+                                    genome=&quot;hg19&quot;,
+                                    col.histogram=&#39;gray&#39;,
+                                    type=&#39;histogram&#39;,
+                                    fill.histogram=&#39;black&#39;,
+                                    name=marker_name,
+                                    col.axis=&quot;black&quot;)
+  
+  i &lt;- 3
+  
+  
+    marker_name &lt;- all_experiment_df$marker_name[i]
+  input_track_data &lt;- import(all_experiment_df$trimpath[i],format=&quot;bigWig&quot;)
+  input_track_list[[marker_name]] = DataTrack(input_track_data, 
+                                    strand=&quot;*&quot;,
+                                    genome=&quot;hg19&quot;,
+                                    col.histogram=&#39;gray&#39;,
+                                    type=&#39;histogram&#39;,
+                                    fill.histogram=&#39;black&#39;,
+                                    name=marker_name,
+                                    col.axis=&quot;black&quot;)
+  
+  
+  i &lt;- 4
+    marker_name &lt;- all_experiment_df$marker_name[i]
+  input_track_data &lt;- import(all_experiment_df$trimpath[i],format=&quot;bigWig&quot;)
+  input_track_list[[marker_name]] = DataTrack(input_track_data, 
+                                    strand=&quot;*&quot;,
+                                    genome=&quot;hg19&quot;,
+                                    col.histogram=&#39;gray&#39;,
+                                    type=&#39;histogram&#39;,
+                                    fill.histogram=&#39;black&#39;,
+                                    name=marker_name,
+                                    col.axis=&quot;black&quot;)
+  
+  i &lt;- 5
+  
+  marker_name &lt;- all_experiment_df$marker_name[i]
+  input_track_data &lt;- import(all_experiment_df$trimpath[i],format=&quot;bigWig&quot;)
+  input_track_list[[marker_name]] = DataTrack(input_track_data, 
+                                    strand=&quot;*&quot;,
+                                    genome=&quot;hg19&quot;,
+                                    col.histogram=&#39;gray&#39;,
+                                    type=&#39;histogram&#39;,
+                                    fill.histogram=&#39;black&#39;,
+                                    name=marker_name,
+                                    col.axis=&quot;black&quot;)
+  
+
+  
+  
+  
+
 
 plotTracks(input_track_list,
            transcriptAnnotation=&quot;symbol&quot;, window=&quot;auto&quot;, 
-           cex.title=1, fontsize=10 )</code></pre>
+           cex.title=1, fontsize=10,from=pos_start,to=pos_end)</code></pre>
 <p><img src="figure/plot_data.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-1">
