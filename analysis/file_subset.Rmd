@@ -16,17 +16,21 @@ library(rtracklayer)
 
 
 all_experiment_df <- read_csv("data/file_list.csv")
-all_experiment_df <- 
-write_csv()
+pos_start <- 38050000
+pos_end <-  38120003
+chr <- 17
+# pos_start <- 38065690
+# pos_end <- 38077293
+region_df <- GenomicRanges::GRanges(seqnames = paste0("chr",chr),ranges = IRanges::IRanges(start=pos_start,end=pos_end)) #tibble::tibble(seqnames=paste0("chr",chr),start=pos_start,width=(pos_end-pos_start+1)) %>%
+    as_granges()
 
-
-
-
+fs::dir_create(fs::path(here::here(),"data/bigwig_files"))
 for(i in 1:nrow(all_experiment_df)){
-
   cat(i)
-  download.file(url = all_experiment_df$url[i],destfile = all_experiment_df$path)
-  tr <- import(as.character(all_experiment_df$path[i]),format="bigWig",which=region_df)
+  dest_path <-  fs::path(here::here(),all_experiment_df$path[i])
+  if(!file.exists(dest_path))
+  download.file(url = all_experiment_df$url[i],destfile =dest_path)
+  tr <- import(as.character(dest_path),format="bigWig",which=region_df)
   write_bigwig(tr,file=as.character(all_experiment_df$trimpath[i]))
   cat("done!\n")
 }

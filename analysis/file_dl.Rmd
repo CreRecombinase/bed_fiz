@@ -49,6 +49,9 @@ all_experiment_df <- map_df(metadata_urls,bed_function) %>% mutate(
   trimpath=fs::path("data","trim_bigwig_files",fs::path_file(path)),
   marker_name=map_chr(str_split(marker,pattern=" "),1))
 
+
+
+
 write_csv(all_experiment_df,"data/file_list.csv")
 ```
 
