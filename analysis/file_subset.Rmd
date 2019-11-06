@@ -21,8 +21,28 @@ pos_end <-  38120003
 chr <- 17
 # pos_start <- 38065690
 # pos_end <- 38077293
-region_df <- GenomicRanges::GRanges(seqnames = paste0("chr",chr),ranges = IRanges::IRanges(start=pos_start,end=pos_end)) #tibble::tibble(seqnames=paste0("chr",chr),start=pos_start,width=(pos_end-pos_start+1)) %>%
-    as_granges()
+region_df <- GenomicRanges::GRanges(seqnames = paste0("chr",chr),ranges = IRanges::IRanges(start=pos_start,end=pos_end))
+
+
+# we want to add the region to the trimpath file name
+# to do that we will:
+# 1 remove the file extension from the file name (using path_ext_remove)
+# 2 add the region as a string on to the end of the file name
+# 3 add the file extension back
+
+region_df_chr <- as.character(region_df) #GRanges have a nice character representation
+
+all_experiment_df <- mutate(
+  all_experiment_df, #dataframe we're mutating
+  trimpath=fs::path( # add path back using `path`
+    paste0( #concatenate strings using paste0
+      fs::path_ext_remove(trimpath), #remove file extension using path_ext_remove
+      region_df_chr), #region we're concatenating to file name
+    ext = "bigWig") #file extension we're adding back on
+)
+  #tibble::tibble(seqnames=paste0("chr",chr),start=pos_start,width=(pos_end-pos_start+1)) %>%
+#    as_granges()
+
 
 fs::dir_create(fs::path(here::here(),"data/bigwig_files"))
 for(i in 1:nrow(all_experiment_df)){
