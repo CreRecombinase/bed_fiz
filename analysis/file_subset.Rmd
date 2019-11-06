@@ -40,6 +40,7 @@ all_experiment_df <- mutate(
       region_df_chr), #region we're concatenating to file name
     ext = "bigWig") #file extension we're adding back on
 )
+write_csv(all_experiment_df,"data/new_file_list.csv")
   #tibble::tibble(seqnames=paste0("chr",chr),start=pos_start,width=(pos_end-pos_start+1)) %>%
 #    as_granges()
 

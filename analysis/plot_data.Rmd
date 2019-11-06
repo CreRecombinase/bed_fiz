@@ -18,7 +18,7 @@ library(plyranges)
 library(rtracklayer)
 library(Gviz)
 
-all_experiment_df <- readr::read_csv("data/file_list.csv")
+all_experiment_df <- readr::read_csv("data/new_file_list.csv")
 
 pos_start <- 38065690
 pos_end <-  38077293
